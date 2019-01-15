@@ -4,21 +4,20 @@ title: Getting Started with xUnit.net (macOS) using JetBrains Rider
 breadcrumb: Documentation
 ---
 
-<h1>Getting Started with xUnit.net (macOS) using JetBrains Rider</h1>
+<h1>Getting Started with xUnit.net on macOS using JetBrains Rider</h1>
 
 <p>
-  In this article, we will demonstrate getting started with xUnit.net, showing
-  you how to write and run your first set of unit tests.
+  In this article, we will demonstrate getting started with xUnit.net using JetBrains Rider on macOS.
+  The process will be the same on Windows and Linux.
+  On Windows, you can also work with xUnit.net tests
+  <a href="getting-started-desktop.html">using Visual Studio or console runner</a>.
 </p>
 
 <ul>
   <li><a href="#create-test-project">Create a test project</a></li>
   <li><a href="#write-first-tests">Write your first tests</a></li>
-  <li><a href="#add-xunit-runner-ref">Add a reference to xUnit.net console runner</a></li>
-  <li><a href="#run-tests">Run tests with the xUnit.net console runner</a></li>
   <li><a href="#write-first-theory">Write your first theory</a></li>
-  <li><a href="#run-tests-visualstudio">Run tests with Visual Studio</a></li>
-  <li><a href="#console-return-codes">Console runner return codes</a></li>
+  <li><a href="#next-steps">Next steps</a></li>
 </ul>
 
 <p><em>
@@ -31,30 +30,22 @@ breadcrumb: Documentation
 
 <p>
   In our example, we have a solution with a single project called Sandbox,
-  which has a class that implements a simple stack functionality.
+  which has a class that implements a primitive calculator.
 </p>
 
 {% highlight C# %}
 namespace Sandbox
 {
-   public class MyStack
+   public class Calculator
    {
-       private int[] st = new int[100];
-       private int sp = 0;
-
-       public void Push(int item)
-       {
-           sp++;
-           st[sp] = item;
-       }
-
-       public int Pop() => sp == 0 ? 0 : st[sp--];
+       public static int Add(int x, int y) => x + y;
+       public static int Subtract(int x, int y) => x - y;
    }
 }
 {% endhighlight %}
 
 <p>
-  To test our stack, let's start by creating a project for our xUnit.net tests.
+  To test our calculator, let's start by creating a project for our xUnit.net tests.
   In the Solution Explorer, right-click the solution and choose <code>Add &gt; New Project...</code>:
 </p>
 
@@ -63,7 +54,7 @@ namespace Sandbox
 <p>
   Choose the Unit Test Project template targeting .NET 4.5.2 or later,
   select <code>xUnit</code> as the project type,
-  and provide some telling name for it, e.g. <code>Tests</code>
+  and provide some telling name for it, e.g. <code>Tests</code>.
 </p>
 
 <p><img class="border" src="../images/getting-started-rider-macos/rider-new-project2.png" width="700"
@@ -78,106 +69,57 @@ namespace Sandbox
 
 <p>
   When you created the test project, JetBrains Rider automatically created a file named <code>Tests.cs</code>
-  with a stub for our first test and opened it for you. Inside this class, add a
-  couple tests:
+  with a stub for our first test and opened it for you.
+  Let's edit the test stub to target our stack class:
 </p>
 
 {% highlight C# %}
+using Sandbox;
 using Xunit;
 
-namespace MyFirstUnitTests
+namespace Tests
 {
-    public class Class1
-    {
-        [Fact]
-        public void PassingTest()
-        {
-            Assert.Equal(4, Add(2, 2));
-        }
+   public class Tests
+   {
+       [Fact]
+       public void PassingTest()
+       {
+           Assert.Equal(Calculator.Add(2,2), 4);
+       }
 
-        [Fact]
-        public void FailingTest()
-        {
-            Assert.Equal(5, Add(2, 2));
-        }
-
-        int Add(int x, int y)
-        {
-            return x + y;
-        }
-    }
+       [Fact]
+       public void FailingTest()
+       {
+           Assert.Equal(Calculator.Add(2,2), 5);
+       }
+   }
 }
+
 {% endhighlight %}
+
+<p><em>
+  Note: If you copy-pasted the above code to the <code>Tests.cs</code> file, the <code>Calculator</code>
+  reference will be highlighted as unresolved because the
+  <code>Sandbox</code> project is not referenced in our test project. You can press
+  <code>Alt+Enter</code> on it to add the missing reference.
+</em></p>
 
 <p>
   Build the solution to ensure that the code compiles. Now that you've written
-  the first test, we need a way to run it. Let's install the NuGet package with
-  the console runner.
+  the first tests, let's run them.
+  You can click the unit test icon next to the test class and choose
+  <code>Run All</code> to run all tests in that class.
 </p>
 
-<h2 id="add-xunit-runner-ref">Add a reference to xUnit.net console runner</h2>
+<p><img class="border" src="../images/getting-started-rider-macos/rider-run-tests.png" width="700"
+        alt="Running xUnit.net tests in Rider"/></p>
 
 <p>
-  Once again, right click on the project in Solution Explorer and choose
-  <code>Manage NuGet Packages</code>. This time, you're going to search for
-  (and install) a package named <code>xunit.runner.console</code>:
+  Rider will start the tests and bring up the Unit Tests window where you can see test status and results.
 </p>
 
-<p><img class="border" src="../images/getting-started/add-xunit-runner-console.png" width="845" /></p>
-
-<p>
-  Unlike the previous package (which added references to the unit testing
-  framework), this package is what's known as a <em>solution-level package</em>.
-  Instead of having assemblies to reference, it adds some tools in your solution
-  folder. We will use one of these tools&mdash;the console runner&mdash;to run
-  your unit tests.
-</p>
-
-<h2 id="run-tests">Run tests with the xUnit.net console runner</h2>
-
-<p>
-  Open a command prompt or PowerShell command window. In the window, navigate
-  to the root folder of your solution.
-</p>
-
-<p>
-  To run the console runner, use a command like the one highlighted below. You
-  should see output similar to this:
-</p>
-
-<pre>
-&gt; <span style="background-color: #ff0">packages\xunit.runner.console.2.2.0\tools\xunit.console MyFirstUnitTests\bin\Debug\MyFirstUnitTests.dll</span>
-xUnit.net Console Runner (64-bit .NET 4.0.30319.42000)
-  Discovering: MyFirstUnitTests
-  Discovered:  MyFirstUnitTests
-  Starting:    MyFirstUnitTests
-    <span style="color: #e03030">MyFirstUnitTests.Class1.FailingTest [FAIL]</span>
-      Assert.Equal() Failure
-      Expected: 5
-      Actual:   4
-      <span style="color: #a8a8a8">Stack Trace:</span>
-        MyFirstUnitTests\Class1.cs(16,0): at MyFirstUnitTests.Class1.FailingTest()
-  Finished:    MyFirstUnitTests
-=== TEST EXECUTION SUMMARY ===
-   MyFirstUnitTests  Total: 2, Errors: 0, Failed: 1, Skipped: 0, Time: 0.159s
-</pre>
-
-<p><em>
-  Note: your path names my vary, depending on what name you chose for your
-  project and which version of xUnit.net you installed.
-</em></p>
-
-<p><em>
-  The console runner has several command line options, which include options
-  for parallelization, test filtering, and result reporting. To learn more
-  about the console runner options, run the console runner with no command
-  line options.
-</em></p>
-
-<p>
-  Now that we've gotten your first unit tests to run, let's introduce one more
-  way to write tests: using theories.
-</p>
+<p><img class="border" src="../images/getting-started-rider-macos/rider-test-results.png" width="700"
+        alt="Analyzing xUnit.net test results in Rider"/></p>
 
 <h2 id="write-first-theory">Write your first theory</h2>
 
@@ -195,11 +137,10 @@ xUnit.net Console Runner (64-bit .NET 4.0.30319.42000)
 </blockquote>
 
 <p>
-  A good example of this testing numeric algorithms. Let's say you want to
-  test an algorithm which determines whether a number is odd or not. If you're
-  writing the positive-side tests (odd numbers), then feeding even numbers
-  into the test would cause it fail, and not because the test or algorithm
-  is wrong.
+  So you will need a theory to write a data-driven test &mdash; a test that can work with multiple data sets.
+  For example, we can test our calculator with different input values and expected sums.
+  Note that feeding an incorrect sum value into such test would cause it fail,
+  and not because the calculator or test is wrong.
 </p>
 
 <p>
@@ -209,153 +150,43 @@ xUnit.net Console Runner (64-bit .NET 4.0.30319.42000)
 
 {% highlight C# %}
 [Theory]
-[InlineData(3)]
-[InlineData(5)]
-[InlineData(6)]
-public void MyFirstTheory(int value)
+[InlineData(2,2,4)]
+[InlineData(3,3,6)]
+[InlineData(2,2,5)]
+public void MyTheory(int x, int y, int sum)
 {
-    Assert.True(IsOdd(value));
+   Assert.Equal(Calculator.Add(x,y), sum);
 }
 
-bool IsOdd(int value)
-{
-    return value % 2 == 1;
-}
 {% endhighlight %}
 
 <p>
-  This time when we compile and run our tests, we see a second failure, for our
-  theory that was given 6:
+  This time when we run our tests, we see a failure for our theory when it was given a sum of 5 for 2 and 2:
 </p>
 
-<pre>
-xUnit.net Console Runner (64-bit .NET 4.0.30319.42000)
-  Discovering: MyFirstUnitTests
-  Discovered:  MyFirstUnitTests
-  Starting:    MyFirstUnitTests
-    <span style="color: #e03030">MyFirstUnitTests.Class1.MyFirstTheory(value: 6) [FAIL]</span>
-      Assert.True() Failure
-      Expected: True
-      Actual:   False
-      <span style="color: #a8a8a8">Stack Trace:</span>
-        MyFirstUnitTests\Class1.cs(30,0): at MyFirstUnitTests.Class1.MyFirstTheory(Int32 value)
-    <span style="color: #e03030">MyFirstUnitTests.Class1.FailingTest [FAIL]</span>
-      Assert.Equal() Failure
-      Expected: 5
-      Actual:   4
-      <span style="color: #a8a8a8">Stack Trace:</span>
-        MyFirstUnitTests\Class1.cs(16,0): at MyFirstUnitTests.Class1.FailingTest()
-  Finished:    MyFirstUnitTests
-=== TEST EXECUTION SUMMARY ===
-   MyFirstUnitTests  Total: 5, Errors: 0, Failed: 2, Skipped: 0, Time: 0.171s
-</pre>
+<p><img class="border" src="../images/getting-started-rider-macos/rider-test-results-theory.png" width="700"
+        alt="Analyzing test results for xUnit.net theory in Rider"/></p>
+<p>
+  Although we've only written 3 test methods, the test runner actually ran 5 tests;
+  that's because each theory with its data set is a separate test.
+  Note also that the runner tells you exactly which set of data failed because it displays the argument values.
+</p>
+
+<h2 id="next-steps">Next steps</h2>
 
 <p>
-  Although we've only written 3 test methods, the console runner actually ran
-  5 tests; that's because each theory with its data set is a separate test.
-  Note also that the runner tells you exactly which set of data failed, because
-  it includes the parameter values in the name of the test.
+  As you write more tests, you may end up having a lot of files or directories in your test project,
+  or you can even have multiple test projects in your solution.
+  In such situation, using editor controls (as demonstrated above)
+  will not be the most convenient way to run multiple tests.
+  Instead, you can locate a solution, project, or any node containing unit tests in the Solution Explorer,
+  right-click on it and choose
+  <code>Run Unit Tests</code>.
+  Or alternatively, you can browse all tests in the solution on the Explorer tab of the Unit Tests window
+  and run tests from there.
 </p>
 
-<h2 id="run-tests-visualstudio">Running tests with Visual Studio</h2>
+<p><img class="border" src="../images/getting-started-rider-macos/rider-test-explorer.png" width="700"
+        alt="Exploring xUnit.net tests in Rider"/></p>
 
-<p class="important">
-  <strong>Important note</strong>: If you've previously installed the xUnit.net Visual Studio
-  Runner VSIX (Extension), you must uninstall it first. The Visual Studio runner is only distributed
-  via NuGet now. To remove it, to go <code>Tools</code> &gt; <code>Extensions and Updates</code>.
-  Scroll to the bottom of the list, and if xUnit.net is installed, uninstall it. This will force
-  you to restart Visual Studio.
-</p>
 
-<p class="important">
-  <strong>If you're having problems discovering or running tests,</strong> you may be a victim
-  of a corrupted runner cache inside Visual Studio. To clear this cache, shut down all instances
-  of Visual Studio, then delete the folder <code>%TEMP%\VisualStudioTestExplorerExtensions</code>.
-  Also make sure your solution is only linked against a single version of the Visual Studio runner
-  NuGet package (<code>xunit.runner.visualstudio</code>).
-</p>
-
-<p>
-  If you have Visual Studio Community (or a paid-for version of Visual Studio), you can run your
-  xUnit.net tests within Visual Studio's built-in test runner (named Test Explorer). Unfortunately,
-  this does not include Express editions of Visual Studio (you should upgrade to the free
-  <a href="http://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx">Community
-  Edition</a> instead).
-</p>
-
-<p>
-  Right click on the project in Solution Explorer and choose <code>Manage NuGet Packages</code>.
-  Search for (and install) a package named <code>xunit.runner.visualstudio</code>:
-</p>
-
-<p><img class="border" src="../images/running-tests-in-vs/add-xunit-runner-visualstudio.png" width="981" /></p>
-
-<p>
-  Make sure Test Explorer is visible (go to <code>Test &gt; Windows &gt; Test Explorer</code>). Every
-  time you build your project, the runner will discover unit tests in your project. After a moment of
-  discovery, you should see the list of discovered tests:
-</p>
-
-<p><img class="border" src="../images/running-tests-in-vs/test-explorer.png" width="314" /></p>
-
-<p>
-  Click the <code>Run All</code> link in the Test Explorer window, and you should see the results update
-  in the Test Explorer window as the tests are run:
-</p>
-
-<p><img class="border" src="../images/running-tests-in-vs/test-explorer-post-run.png" width="347" /></p>
-
-<p>
-  You can click on a failed test to see the failure message, and the stack trace. You can click on the
-  stack trace lines to take you directly to the failing line of code.
-</p>
-
-<p><em>
-  Note: Only xUnit.net v2 supports pre-enumeration of theories; when discovering theories with v1,
-  it will only show a single test method for the theory.
-</em></p>
-
-<h2 id="console-return-codes">Console runner return codes</h2>
-
-<p>Starting with version 2.2, the following return codes are used by the console runner:</p>
-
-<table class="table">
-  <tr>
-    <th>Return code</th>
-    <th>Meaning</th>
-  </tr>
-  <tr>
-    <td><code>0</code></td>
-    <td class="wrapped-wide">The tests ran successfully.</td>
-  </tr>
-  <tr>
-    <td><code>1</code></td>
-    <td class="wrapped-wide">One or more of the tests failed.</td>
-  </tr>
-  <tr>
-    <td><code>2</code></td>
-    <td class="wrapped-wide">
-      The help page was shown, either because it was requested, or because the user did not provide any
-      command line arguments.
-    </td>
-  </tr>
-  <tr>
-    <td><code>3</code></td>
-    <td class="wrapped-wide">
-      There was a problem with one of the command line options passed to the runner.
-    </td>
-  </tr>
-  <tr>
-    <td><code>4</code></td>
-    <td class="wrapped-wide">
-      There was a problem loading one or more of the test assemblies (for example, if a 64-bit only assembly
-      is run with the 32-bit test runner).
-    </td>
-  </tr>
-  <tr>
-    <td><code>0xC000013A (-1073741510)</code></td>
-    <td class="wrapped-wide">
-      The user canceled the test execution by pressing Ctrl+C.
-    </td>
-  </tr>
-</table>
