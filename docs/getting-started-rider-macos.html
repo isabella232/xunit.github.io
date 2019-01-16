@@ -70,7 +70,7 @@ namespace Sandbox
 <p>
   When you created the test project, JetBrains Rider automatically created a file named <code>Tests.cs</code>
   with a stub for our first test and opened it for you.
-  Let's edit the test stub to target our stack class:
+  Let's edit the test stub to target our calculator class:
 </p>
 
 {% highlight C# %}
@@ -99,9 +99,9 @@ namespace Tests
 
 <p><em>
   Note: If you copy-pasted the above code to the <code>Tests.cs</code> file, the <code>Calculator</code>
-  reference will be highlighted as unresolved because the
+  usage will be highlighted as unresolved because the
   <code>Sandbox</code> project is not referenced in our test project. You can press
-  <code>Alt+Enter</code> on it to add the missing reference.
+  <code>Alt+Enter</code> on the highlighted usage to add the missing project reference.
 </em></p>
 
 <p>
@@ -120,6 +120,10 @@ namespace Tests
 
 <p><img class="border" src="../images/getting-started-rider-macos/rider-test-results.png" width="700"
         alt="Analyzing xUnit.net test results in Rider"/></p>
+
+<p>
+  As expected, the <code>PassingTest</code> has passed and the <code>FailingTest</code> has failed.
+</p>
 
 <h2 id="write-first-theory">Write your first theory</h2>
 
@@ -169,7 +173,7 @@ public void MyTheory(int x, int y, int sum)
 <p>
   Although we've only written 3 test methods, the test runner actually ran 5 tests;
   that's because each theory with its data set is a separate test.
-  Note also that the runner tells you exactly which set of data failed because it displays the argument values.
+  Note also that the runner tells you exactly which set of data failed, because it displays the argument values.
 </p>
 
 <h2 id="next-steps">Next steps</h2>
